@@ -2,27 +2,106 @@
     <a href="https://www.manim.community/"><img src="https://raw.githubusercontent.com/ManimCommunity/manim/main/logo/cropped.png"></a>
     <br />
     <br />
-    <a href="https://pypi.org/project/manim/"><img src="https://img.shields.io/pypi/v/manim.svg?style=flat&logo=pypi" alt="PyPI Latest Release"></a>
-    <a href="https://hub.docker.com/r/manimcommunity/manim"><img src="https://img.shields.io/docker/v/manimcommunity/manim?color=%23099cec&label=docker%20image&logo=docker" alt="Docker image"> </a>
-    <a href="https://mybinder.org/v2/gh/ManimCommunity/jupyter_examples/HEAD?filepath=basic_example_scenes.ipynb"><img src="https://mybinder.org/badge_logo.svg"></a>
-    <a href="http://choosealicense.com/licenses/mit/"><img src="https://img.shields.io/badge/license-MIT-red.svg?style=flat" alt="MIT License"></a>
-    <a href="https://www.reddit.com/r/manim/"><img src="https://img.shields.io/reddit/subreddit-subscribers/manim.svg?color=orange&label=reddit&logo=reddit" alt="Reddit" href=></a>
-    <a href="https://twitter.com/manim_community/"><img src="https://img.shields.io/twitter/url/https/twitter.com/cloudposse.svg?style=social&label=Follow%20%40manim_community" alt="Twitter">
-    <a href="https://www.manim.community/discord/"><img src="https://img.shields.io/discord/581738731934056449.svg?label=discord&color=yellow&logo=discord" alt="Discord"></a>
-    <a href="https://github.com/psf/black"><img src="https://img.shields.io/badge/code%20style-black-000000.svg" alt="Code style: black">
-    <a href="https://docs.manim.community/"><img src="https://readthedocs.org/projects/manimce/badge/?version=latest" alt="Documentation Status"></a>
-    <a href="https://pepy.tech/project/manim"><img src="https://pepy.tech/badge/manim/month?" alt="Downloads"> </a>
-    <img src="https://github.com/ManimCommunity/manim/workflows/CI/badge.svg" alt="CI">
-    <br />
-    <br />
     <i>An animation engine for explanatory math videos</i>
 </p>
+
+# ManimLive - Streaming Web Renderer Fork
+
+> [!IMPORTANT]
+> This is a **fork of Manim Community Edition** with a custom **Streaming Web Renderer** designed for mobile apps and web applications.
+
+## What's Different?
+
+This fork adds a **streaming web renderer** that outputs animations as interactive HTML files instead of videos. Perfect for:
+
+- **React Native / Mobile Apps**: Real-time animation rendering in WebViews
+- **Web Applications**: Instant preview without video encoding
+- **Interactive Content**: Animations that load progressively as they render
+
+### Key Features
+
+✅ **Same Manim API** - Use all standard Manim classes and animations
+✅ **Real-time Streaming** - Frames are written to HTML as they're generated
+✅ **Full Feature Support** - LaTeX, shapes, camera movements, all animations
+✅ **WebView Ready** - Built-in React Native WebView integration
+✅ **Production Quality** - Renders match Cairo output exactly
+
 <hr />
+
+## Quick Start
+
+### Installation
+
+```bash
+# Install this fork
+pip install git+https://github.com/yourusername/ManimLive.git
+
+# Or for local development
+git clone https://github.com/yourusername/ManimLive.git
+cd ManimLive
+pip install -e .
+```
+
+### Using the Streaming Renderer
+
+```bash
+# Render any scene to streaming HTML
+manim your_scene.py YourScene -ql --renderer stream
+
+# Output: ./media/stream.html
+```
+
+### Python API Usage
+
+```python
+from manim import Scene, Circle, MathTex, Write, Create, config
+
+# Configure streaming renderer
+config.renderer = "stream"
+
+class MyScene(Scene):
+    def construct(self):
+        circle = Circle()
+        formula = MathTex("E = mc^2")
+        self.play(Create(circle), Write(formula))
+        self.wait()
+
+# Render
+scene = MyScene()
+scene.render()
+
+# Read the generated HTML
+with open('./media/stream.html', 'r') as f:
+    html_content = f.read()
+    # Send to mobile app, save to database, etc.
+```
+
+### React Native Integration
+
+The generated HTML includes WebView message handlers:
+
+```javascript
+// In your React Native app
+import { WebView } from 'react-native-webview';
+
+<WebView
+  source={{ html: animationHTML }}
+  onMessage={(event) => {
+    const data = JSON.parse(event.nativeEvent.data);
+    // data.type === 'frame_added'
+    // data.type === 'streaming_complete'
+  }}
+/>
+```
+
+---
+
+## About Manim
 
 Manim is an animation engine for explanatory math videos. It's used to create precise animations programmatically, as demonstrated in the videos of [3Blue1Brown](https://www.3blue1brown.com/).
 
 > [!NOTE]
-> The community edition of Manim (ManimCE) is a version maintained and developed by the community. It was forked from 3b1b/manim, a tool originally created and open-sourced by Grant Sanderson, also creator of the 3Blue1Brown educational math videos. While Grant Sanderson continues to maintain his own repository, we recommend this version for its continued development, improved features, enhanced documentation, and more active community-driven maintenance. If you would like to study how Grant makes his videos, head over to his repository ([3b1b/manim](https://github.com/3b1b/manim)).
+> This fork is based on Manim Community Edition (ManimCE), which is maintained and developed by the community. The original Manim was created by Grant Sanderson (3Blue1Brown). For the upstream version, visit [ManimCommunity/manim](https://github.com/ManimCommunity/manim).
 
 ## Table of Contents:
 
