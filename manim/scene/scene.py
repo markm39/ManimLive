@@ -51,6 +51,10 @@ from ..camera.camera import Camera
 from ..constants import *
 from ..renderer.cairo_renderer import CairoRenderer
 from ..renderer.opengl_renderer import OpenGLCamera, OpenGLMobject, OpenGLRenderer
+from ..renderer.web_renderer import WebRenderer
+from ..renderer.fast_web_renderer import FastWebRenderer
+from ..renderer.optimized_web_renderer import OptimizedWebRenderer
+from ..renderer.streaming_web_renderer import StreamingWebRenderer
 from ..renderer.shader import Object3D
 from ..utils import opengl, space_ops
 from ..utils.exceptions import EndSceneEarlyException, RerunSceneException
@@ -170,7 +174,7 @@ class Scene:
 
     def __init__(
         self,
-        renderer: CairoRenderer | OpenGLRenderer | None = None,
+        renderer: CairoRenderer | OpenGLRenderer | WebRenderer | None = None,
         camera_class: type[Camera] = Camera,
         always_update_mobjects: bool = False,
         random_seed: int | None = None,
@@ -206,8 +210,24 @@ class Scene:
             if renderer is None:
                 renderer = OpenGLRenderer()
 
+        if config.renderer == RendererType.WEB:
+            if renderer is None:
+                renderer = WebRenderer()
+
+        if config.renderer == RendererType.FASTWEB:
+            if renderer is None:
+                renderer = FastWebRenderer()
+
+        if config.renderer == RendererType.WEBGL:
+            if renderer is None:
+                renderer = OptimizedWebRenderer()
+
+        if config.renderer == RendererType.STREAM:
+            if renderer is None:
+                renderer = StreamingWebRenderer()
+
         if renderer is None:
-            self.renderer: CairoRenderer | OpenGLRenderer = CairoRenderer(
+            self.renderer: CairoRenderer | OpenGLRenderer | WebRenderer = CairoRenderer(
                 # TODO: Is it a suitable approach to make an instance of
                 # the self.camera_class here?
                 camera_class=self.camera_class,
@@ -471,7 +491,7 @@ class Scene:
                 family_members.extend(mob.get_family())
             return family_members
         else:
-            assert config.renderer == RendererType.CAIRO
+            assert config.renderer in [RendererType.CAIRO, RendererType.WEB, RendererType.FASTWEB, RendererType.WEBGL, RendererType.STREAM]
             return extract_mobject_family_members(
                 self.mobjects,
                 use_z_index=self.renderer.camera.use_z_index,
@@ -506,7 +526,7 @@ class Scene:
             self.remove(*new_meshes)  # type: ignore[arg-type]
             self.meshes += new_meshes
         else:
-            assert config.renderer == RendererType.CAIRO
+            assert config.renderer in [RendererType.CAIRO, RendererType.WEB, RendererType.FASTWEB, RendererType.WEBGL, RendererType.STREAM]
             new_and_foreground_mobjects: list[Mobject] = [
                 *mobjects,  # type: ignore[list-item]
                 *self.foreground_mobjects,
@@ -566,7 +586,7 @@ class Scene:
             )
             return self
         else:
-            assert config.renderer == RendererType.CAIRO
+            assert config.renderer in [RendererType.CAIRO, RendererType.WEB, RendererType.FASTWEB, RendererType.WEBGL, RendererType.STREAM]
             for list_name in "mobjects", "foreground_mobjects":
                 self.restructure_mobjects(mobjects, list_name, False)
             return self

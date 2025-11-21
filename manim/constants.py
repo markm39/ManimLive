@@ -277,6 +277,10 @@ class RendererType(Enum):
 
     CAIRO = "cairo"  #: A renderer based on the cairo backend.
     OPENGL = "opengl"  #: An OpenGL-based renderer.
+    WEB = "web"  #: A web-based renderer.
+    FASTWEB = "fastweb"  #: A fast web-based renderer (keyframes only).
+    WEBGL = "webgl"  #: Optimized web renderer with full 60fps.
+    STREAM = "stream"  #: Streaming renderer - plays as it generates!
 
 
 class LineJointType(Enum):
